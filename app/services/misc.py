@@ -20,4 +20,9 @@ class MiscService:
         :param data: Dictionary containing subscription information.
         :return: True if subscription is sent successfully, False otherwise.
         """
-        return True
+        try:
+            MiscDatabase().add_subscription(data)
+            return True
+        except Exception as e:
+            print(f"Error adding subscription: {e}")
+            return False
