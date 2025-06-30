@@ -1,4 +1,4 @@
-from app.database.user_database import userDb
+from app.database.user_database import UserDatabase
 from jwt import encode, decode
 from typing import Optional
 
@@ -10,8 +10,7 @@ class UserService:
         :return: True if user is created successfully, False otherwise.
         """
         try:
-            user = userDb.add(**user_data)
-            userDb.save(user)
+            UserDatabase().create_user(user_data)
             return True
         except Exception as e:
             print(f"Error creating user: {e}")
@@ -24,7 +23,7 @@ class UserService:
         :return: User data if found, None otherwise.
         """
         try:
-            user = userDb.find_one({"phone": phone})
+            user = UserDatabase().find_one({"phone": phone})
             return user if user else None
         except Exception as e:
             print(f"Error retrieving user by phone: {e}")
