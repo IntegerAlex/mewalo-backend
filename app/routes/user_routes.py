@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.user_service import UserService
+from app.services.user_service import UserService
 user_bp = Blueprint('user', __name__)
 
 
@@ -9,6 +9,7 @@ def create_user():
     Endpoint to create a new user.
     Expects JSON data with first_name, last_name, email, and phone.
     """
+
     user_data = request.json
     if not user_data:
         return jsonify({"error": "No data provided"}), 400

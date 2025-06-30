@@ -1,5 +1,5 @@
-import userDb from database as db
-from PyJWT import encode, decode
+from app.database.user_database import userDb
+from jwt import encode, decode
 from typing import Optional
 
 class UserService:
