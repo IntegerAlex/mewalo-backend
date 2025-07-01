@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from app.config import db  # Import the db object
 from app.routes.user_routes import user_bp
@@ -21,6 +21,10 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(category_bp, url_prefix='/categories')
     app.register_blueprint(product_route, url_prefix='/products')
+
+    @app.route('/add-product')
+    def add_product_form():
+        return render_template('add_product.html')
 
     @app.route('/')
     def index():

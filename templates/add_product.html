@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        #container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        #addProductForm {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        textarea {
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        button[type="submit"] {
+            margin-top: 2rem;
+            padding: 0.8rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #message-area {
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        #message-area:empty {
+            display: none;
+        }
+        #message-area.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        #message-area.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Add a New Product</h1>
+        <div id="message-area"></div>
+        <form id="addProductForm">
+            <label for="product_id">Product ID:</label>
+            <input type="text" id="product_id" name="product_id" placeholder="e.g., prod_123" required>
+            
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name" placeholder="e.g., Organic Honey" required>
+            
+            <label for="product_description">Description:</label>
+            <textarea id="product_description" name="product_description" placeholder="e.g., Raw, unfiltered honey from wild flowers."></textarea>
+            
+            <label for="product_price">Price:</label>
+            <input type="number" id="product_price" name="product_price" step="0.01" placeholder="e.g., 15.99" required>
+            
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" placeholder="e.g., Pantry Staples" required>
+            
+            <label for="subcategory">Sub-category:</label>
+            <input type="text" id="subcategory" name="subcategory" placeholder="e.g., Sweeteners" required>
+            
+            <label for="product_barcode">Barcode:</label>
+            <input type="text" id="product_barcode" name="product_barcode" placeholder="e.g., 9876543210987" required>
+            
+            <label for="product_quantity">Quantity:</label>
+            <input type="number" id="product_quantity" name="product_quantity" placeholder="e.g., 50" required>
+            
+            <label for="product_unit">Unit:</label>
+            <input type="text" id="product_unit" name="product_unit" placeholder="e.g., jar or gm" required>
+            
+            <label for="product_manufacturer">Manufacturer:</label>
+            <input type="text" id="product_manufacturer" name="product_manufacturer" placeholder="e.g., Nature's Gold">
+            
+            <label for="product_image_url">Image URL:</label>
+            <input type="url" id="product_image_url" name="product_image_url" placeholder="https://dummyimage.com/600x400/888/fff.png&text=Product+Image">
+            
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('addProductForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const messageArea = document.getElementById('message-area');
+            messageArea.textContent = ''; 
+            messageArea.className = '';
+
+            // Basic client-side validation
+            if (!form.checkValidity()) {
+                messageArea.textContent = 'Please fill out all required fields.';
+                messageArea.className = 'error';
+                return;
+            }
+
+            const formData = new FormData(form);
+            const productData = {};
+            formData.forEach((value, key) => {
+                if (key === 'product_price' || key === 'product_quantity') {
+                    productData[key] = Number(value);
+                } else {
+                    productData[key] = value;
+                }
+            });
+            
+            productData.product_coupon = {};
+            productData.product_delivery = {};
+
+            try {
+                const response = await fetch('/products/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    messageArea.textContent = 'Product added successfully!';
+                    messageArea.className = 'success';
+                    form.reset();
+                } else {
+                    messageArea.textContent = 'Error: ' + result.error;
+                    messageArea.className = 'error';
+                }
+            } catch (error) {
+                console.error('Failed to add product:', error);
+                messageArea.textContent = 'An unexpected error occurred. Please try again.';
+                messageArea.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html> 

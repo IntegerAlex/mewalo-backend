@@ -17,3 +17,36 @@ def get_product_by_id(product_id):
     if product and '_id' in product:
         product['_id'] = str(product['_id'])
     return jsonify({'product': product}), 200
+
+@product_route.route('/', methods=['POST'])
+def add_product():
+    product_data = request.json
+    if not product_data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    # --- Server-side validation ---
+    required_fields = [
+        'product_id', 'product_name', 'product_price', 'category', 
+        'subcategory', 'product_barcode', 'product_quantity', 'product_unit'
+    ]
+    
+    missing_fields = [field for field in required_fields if field not in product_data]
+    if missing_fields:
+        return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+    # Type validation for numeric fields
+    try:
+        float(product_data['product_price'])
+        int(product_data['product_quantity'])
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid data type for price or quantity."}), 400
+    # --- End validation ---
+
+    try:
+        success = ProductDatabase().add_product(product_data)
+        if success:
+            return jsonify({"message": "Product added successfully!"}), 201
+        else:
+            return jsonify({"error": "Failed to add product"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
