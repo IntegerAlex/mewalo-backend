@@ -1,4 +1,5 @@
 from app.database.misc_database import MiscDatabase
+from datetime import datetime
 
 class MiscService:
     def contact_us(self, data: dict) -> bool:
@@ -8,6 +9,7 @@ class MiscService:
         :return: True if contact is sent successfully, False otherwise.
         """
         try:
+            data["timestamp"] = datetime.now()
             MiscDatabase().add_enquiry(data)
             return True
         except Exception as e:

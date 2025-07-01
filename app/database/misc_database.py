@@ -3,8 +3,8 @@ from app.config import db
 class MiscDatabase:
     def add_enquiry(self, enquiry_data: dict) -> bool:
         """
-        Add a new enquiry to the database.
-        :param enquiry_data: Dictionary containing enquiry information.
+        Add a new enquiry to the database, including a timestamp.
+        :param enquiry_data: Dictionary containing enquiry information, including timestamp.
         :return: True if enquiry is added successfully, False otherwise.
         """
         try:

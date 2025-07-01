@@ -2,7 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from app.config import db  # Import the db object
 from app.routes.user_routes import user_bp
+from app.routes.category_routes import category_bp
 from app.services.misc import MiscService
+from app.routes.product_route import product_route
 
 def create_app():
     app = Flask(__name__)
@@ -17,6 +19,8 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(category_bp, url_prefix='/categories')
+    app.register_blueprint(product_route, url_prefix='/products')
 
     @app.route('/')
     def index():

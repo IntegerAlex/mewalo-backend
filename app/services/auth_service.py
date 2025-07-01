@@ -1,6 +1,12 @@
 from jwt import encode, decode
 import random
+
 from app.database.user_database import UserDatabase
+import http.client
+import json
+import os
+from dotenv import load_dotenv
+
 temp_otp =  {}
 temp_user = {}
 class AuthService:
@@ -17,10 +23,61 @@ class AuthService:
         except Exception as e:
             print(f"Error validating user data: {e}")
             return False
+        
+    def send_otp_prod(self, phone: int, otp: str) -> bool:
+        """
+        Send an OTP via MSG91.
+        :param phone: Full phone number (e.g., 919XXXXXXXXX).
+        :param otp: The OTP to send.
+        :return: True if sent successfully, False otherwise.
+        """
+        load_dotenv()  # Load .env variables
+
+        auth_key = os.getenv("MSG91_AUTH_KEY")
+        sender_id = os.getenv("MSG91_SENDER_ID")
+        template_id = os.getenv("MSG91_TEMPLATE_ID")
+
+        if not all([auth_key, sender_id, template_id]):
+            print("Missing environment variables")
+            return False
+
+        conn = http.client.HTTPSConnection("control.msg91.com")
+
+        payload = json.dumps({
+            "template_id": template_id,
+            "sender": sender_id,
+            "short_url": "0",  # or "1"
+            "mobiles": phone,
+            "VAR1": otp,
+            "VAR2": "Support"  # Optional
+        })
+
+        headers = {
+            "Authkey": auth_key,
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+
+        try:
+            conn.request("POST", "/api/v5/flow/", payload, headers)
+            res = conn.getresponse()
+            data = res.read()
+            print("MSG91 Response:", data.decode("utf-8"))
+            return res.status == 200
+        except Exception as e:
+            print("Error sending OTP:", e)
+            return False
+
+    def send_otp(self, phone: int, otp: str) -> bool:
+        """
+        Send an OTP via MSG91.
+        :param phone: Full phone number (e.g., 919XXXXXXXXX).
+        :param otp: The OTP to send.
+        :return: True if sent successfully, False otherwise.
+        """
+        print(f"OTP: {otp} sent to {phone}")
+        return True
     
-
-
-
     def generate_otp(self, phone: str) -> str:
         """
         Generate a one-time password (OTP) for the user.
@@ -29,7 +86,7 @@ class AuthService:
         """
         otp = random.randint(100000, 999999)
         try:
-            self.send_otp(phone, otp)
+            self.send_otp(phone, str(otp))
             temp_otp[phone] = otp
             print(temp_otp)
             return True
@@ -51,13 +108,7 @@ class AuthService:
         del temp_otp[phone]
         return True
     
-    def send_otp(self, phone: str, otp: str) -> bool:
-        """
-        Send an OTP to the user.
-        :param phone: User's phone number.
-        :param otp: OTP to send.
-        :return: True if OTP is sent successfully, False otherwise.
-        """
+    
         return True
     
     def generate_jwt(self, phone: str) -> str:
