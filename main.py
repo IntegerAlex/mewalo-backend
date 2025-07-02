@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from app.config import db  # Import the db object
 from app.routes.user_routes import user_bp
-from app.routes.category_routes import category_bp
+from app.routes.category_route import category_bp
 from app.services.misc import MiscService
 from app.routes.product_route import product_route
+from app.routes.cart_route import cart_bp
+from app.routes.wishlist_route import wishlist_bp
 
 def create_app():
     app = Flask(__name__)
@@ -21,7 +23,8 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(category_bp, url_prefix='/categories')
     app.register_blueprint(product_route, url_prefix='/products')
-
+    app.register_blueprint(cart_bp, url_prefix='/cart')
+    app.register_blueprint(wishlist_bp, url_prefix='/wishlist')
     @app.route('/add-product')
     def add_product_form():
         return render_template('add_product.html')

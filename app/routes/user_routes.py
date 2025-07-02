@@ -3,6 +3,7 @@ from app.services.user_service import UserService
 from app.services.auth_service import AuthService, temp_user
 from app.database.user_database import UserDatabase
 from bson.objectid import ObjectId
+
 user_bp = Blueprint('user', __name__)
 
 
@@ -90,4 +91,6 @@ def verify_login():
         return jsonify({"message": "User logged in successfully", "jwt": jwt, "user": user}), 200 # Return full user object
     else:
         return jsonify({"error": "Invalid OTP"}), 400
+
+
 
