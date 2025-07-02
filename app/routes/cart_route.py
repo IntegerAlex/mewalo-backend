@@ -26,19 +26,19 @@ def add_to_cart():
     cart_service = CartService().add_to_cart(user_data["user_id"], user_data["product_id"])
     return jsonify({"cart": cart_service}), 200
 
-@cart_bp.route('/<product_id>', methods=['DELETE'])
-def remove_from_cart(product_id):
+@cart_bp.route('/', methods=['DELETE'])
+def remove_from_cart():
     """
     Endpoint to remove a product from a user's cart.
     Expects JSON data with user_id.
     """
     user_data = request.json
-    if not user_data or "user_id" not in user_data:
-        return jsonify({"error": "No user_id provided"}), 400
-    cart_service = CartService().remove_from_cart(user_data["user_id"], product_id)
+    if not user_data or "user_id" not in user_data or "product_id" not in user_data:
+        return jsonify({"error": "Missing user_id or product_id"}), 400
+    cart_service = CartService().remove_from_cart(user_data["user_id"], user_data["product_id"])
     return jsonify({"cart": cart_service}), 200
 
-@cart_bp.route('/', methods=['DELETE'])
+@cart_bp.route('/<user_id>', methods=['DELETE'])
 def clear_cart():
     """
     Endpoint to clear a user's cart.
