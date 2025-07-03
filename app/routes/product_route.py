@@ -27,7 +27,7 @@ def add_product():
     # --- Server-side validation ---
     required_fields = [
         'product_id', 'product_name', 'product_price', 'category', 
-        'subcategory', 'product_barcode', 'product_quantity', 'product_unit'
+        'subcategory', 'product_barcode', 'product_quantity', 'product_unit', 'in_stock'
     ]
     
     missing_fields = [field for field in required_fields if field not in product_data]
@@ -38,8 +38,11 @@ def add_product():
     try:
         float(product_data['product_price'])
         int(product_data['product_quantity'])
-    except (ValueError, TypeError):
-        return jsonify({"error": "Invalid data type for price or quantity."}), 400
+        # Validate in_stock as a boolean
+        if not isinstance(product_data['in_stock'], bool):
+            raise TypeError("in_stock must be a boolean.")
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Invalid data type: {e}"}), 400
     # --- End validation ---
 
     try:

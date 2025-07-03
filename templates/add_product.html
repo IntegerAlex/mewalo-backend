@@ -123,11 +123,14 @@
             <label for="product_unit">Unit:</label>
             <input type="text" id="product_unit" name="product_unit" placeholder="e.g., jar or gm" required>
             
+            <label for="in_stock">In Stock:</label>
+            <input type="checkbox" id="in_stock" name="in_stock" checked><br>
+
             <label for="product_manufacturer">Manufacturer:</label>
             <input type="text" id="product_manufacturer" name="product_manufacturer" placeholder="e.g., Nature's Gold">
             
             <label for="product_image_url">Image URL:</label>
-            <input type="url" id="product_image_url" name="product_image_url" placeholder="https://dummyimage.com/600x400/888/fff.png&text=Product+Image">
+            <input type="url" id="product_image_url" name="product_image_url" placeholder="https://dummyimage.com/600x400/888888/ffffff.png&text=Product+Image">
             
             <button type="submit">Add Product</button>
         </form>
@@ -154,10 +157,17 @@
             formData.forEach((value, key) => {
                 if (key === 'product_price' || key === 'product_quantity') {
                     productData[key] = Number(value);
+                } else if (key === 'in_stock') {
+                    productData[key] = (value === 'on'); // Checkbox value is 'on' if checked
                 } else {
                     productData[key] = value;
                 }
             });
+            
+            // Ensure in_stock is false if checkbox is not checked (not present in formData)
+            if (!formData.has('in_stock')) {
+                productData.in_stock = false;
+            }
             
             productData.product_coupon = {};
             productData.product_delivery = {};

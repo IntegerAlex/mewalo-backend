@@ -11,3 +11,14 @@ class CategoriesService:
         except Exception as e:
             print(f"Error fetching aggregated categories: {e}")
             return {} 
+        
+    def add_category(self, category_name: str, category_image: str) -> dict:
+        """
+        Add a new category.
+        :param category_name: Name of the category to add.
+        :return: Dictionary of the added category.
+        """
+        try:
+            return CategoriesDatabase().add_category(category_name, category_image)
+        except Exception as e:
+            print(f"Error adding category: {e}")
