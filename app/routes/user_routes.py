@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from app.services.user_service import UserService
 from app.services.auth_service import AuthService, temp_user
 from app.database.user_database import UserDatabase
@@ -44,8 +44,10 @@ def verify_user():
         if '_id' in user_to_create and isinstance(user_to_create['_id'], ObjectId):
             user_to_create['_id'] = str(user_to_create['_id'])
 
-        jwt = AuthService().generate_jwt(user_data["phone"])
-        return jsonify({"message": "User verified successfully", "jwt": jwt, "user": user_to_create}), 200
+        jwt_token = AuthService().generate_jwt(user_data["phone"])
+        response = make_response(jsonify({"message": "User verified successfully", "user": user_to_create}))
+        response.set_cookie('token', jwt_token, httponly=True, secure=True, samesite='Lax')
+        return response
     else:
         return jsonify({"error": "Invalid OTP"}), 400
 
@@ -87,8 +89,10 @@ def verify_login():
         if '_id' in user and isinstance(user['_id'], ObjectId):
             user['_id'] = str(user['_id'])
 
-        jwt = AuthService().generate_jwt(user["phone"]) # Use user["phone"] from retrieved user
-        return jsonify({"message": "User logged in successfully", "jwt": jwt, "user": user}), 200 # Return full user object
+        jwt_token = AuthService().generate_jwt(user["phone"])
+        response = make_response(jsonify({"message": "User logged in successfully", "user": user}))
+        response.set_cookie('token', jwt_token, httponly=True, secure=True, samesite='Lax')
+        return response
     else:
         return jsonify({"error": "Invalid OTP"}), 400
 

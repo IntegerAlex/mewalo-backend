@@ -32,8 +32,6 @@ The request body must be sent in JSON format and should include the following pa
 
 The response will be returned in JSON format and will contain the following fields:
 
-- `jwt` (string): A JSON Web Token that can be used for authenticated requests. It will be empty if the verification fails.
-    
 - `message` (string): A message indicating the status of the verification process.
     
 - `user` (object): An object containing user details if the verification is successful:
@@ -53,7 +51,6 @@ The response will be returned in JSON format and will contain the following fiel
 
 ``` json
 {
-  "jwt": "",
   "message": "",
   "user": {
     "_id": "",
@@ -66,8 +63,9 @@ The response will be returned in JSON format and will contain the following fiel
 
  ```
 
-### Status Codes
+### Notes
 
-- **200 OK**: Verification successful, user details and JWT returned.
+- Upon successful verification, a JWT token will be set as an HttpOnly, secure, and samesite=Lax cookie named 'token'.
+- **200 OK**: Verification successful, user details returned, and JWT set as cookie.
     
 - **4xx/5xx**: Various error responses indicating issues with the request or server errors.

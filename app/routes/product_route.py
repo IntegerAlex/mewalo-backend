@@ -27,7 +27,8 @@ def add_product():
     # --- Server-side validation ---
     required_fields = [
         'product_id', 'product_name', 'product_price', 'category', 
-        'subcategory', 'product_barcode', 'product_quantity', 'product_unit', 'in_stock'
+        'subcategory', 'product_barcode', 'product_quantity', 'product_unit', 'in_stock',
+        'product_image'
     ]
     
     missing_fields = [field for field in required_fields if field not in product_data]
