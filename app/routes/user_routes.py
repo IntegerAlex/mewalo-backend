@@ -95,6 +95,15 @@ def verify_login():
         return response
     else:
         return jsonify({"error": "Invalid OTP"}), 400
+    
+@user_bp.route('/logout', methods=['POST'])
+def logout_user():
+    """
+    Endpoint to logout a user.
+    """
+    response = make_response(jsonify({"message": "User logged out successfully"}))
+    response.delete_cookie('token')
+    return response
 
 
 
